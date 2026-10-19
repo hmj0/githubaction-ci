@@ -2,10 +2,10 @@ name: rappel
 run-name: rappel avec ${{github.repository}}
 
 on: 
-#    push: 
-#        branches: main
-#    pull_request: 
-#        branches: main
+    push: 
+        branches: main
+    pull_request: 
+        branches: main
     workflow_dispatch:
         inputs:
             environnements:
@@ -27,7 +27,7 @@ env:
 
 jobs:
     test:
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.event.inputs == 'dev'
         name: job_rappel
         runs-on: ubuntu-22.04
         timeout-minutes: 5
