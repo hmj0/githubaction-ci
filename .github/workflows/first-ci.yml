@@ -27,7 +27,7 @@ env:
 
 jobs:
     test:
-        if: github.event_name == 'push' || github.event.inputs == 'dev'
+        if: github.event_name == 'push' || inputs.environnements == 'dev'
         name: job_rappel
         runs-on: ubuntu-22.04
         timeout-minutes: 5
