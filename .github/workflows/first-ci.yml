@@ -1,0 +1,42 @@
+name: rappel
+run-name: rappel avec ${{github.repository}}
+
+on: 
+    push: 
+        branches: main
+    pull_request: 
+        branches: main
+
+permissions:
+    contents: read
+
+env:
+
+    USER_NAME: ${{secrets.USER_NAME}}
+    USER_PASSWORD: ${{secrets.USER_PASSWORD}}
+
+jobs:
+    test:
+        if: github.event_name == 'push'
+        name: super job
+        runs-on: ubuntu-22.04
+        timeout-minutes: 5
+        env:
+            REPOSITORY: ${{github.repository}}
+            ACTOR: ${{github.actor}}
+            
+
+        steps:
+            - name: checkout
+              uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+            - name: Context github
+              run: |
+                 
+                   echo "repository: "
+            
+            - name: user name
+              run: |
+                 
+                  echo "User name : $USER_NAME"
+                  echo "User Password: $USER_PASSWORD"
