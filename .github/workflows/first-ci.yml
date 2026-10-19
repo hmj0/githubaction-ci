@@ -6,6 +6,16 @@ on:
         branches: main
     pull_request: 
         branches: main
+    workflow_dispatch:
+        inputs:
+            environnements:
+                description: les types d'env disponible
+                required: true
+                type: choice
+                options:
+                    - dev
+                    - prod
+                    - staging
 
 permissions:
     contents: read
@@ -43,3 +53,9 @@ jobs:
                  
                   echo "User name : $USER_NAME"
                   echo "User Password: $USER_PASSWORD"
+
+            - name: Info sur le workflow dispatch
+              run: |
+                   echo "Options choisis: ${{inputs.environnements}}"
+
+                   echo "Options choisis: ${{github.event.inputs}}"
