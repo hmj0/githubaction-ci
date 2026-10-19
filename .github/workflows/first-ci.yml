@@ -18,12 +18,13 @@ env:
 jobs:
     test:
         if: github.event_name == 'push'
-        name: super job
+        name: job_rappel
         runs-on: ubuntu-22.04
         timeout-minutes: 5
         env:
             REPOSITORY: ${{github.repository}}
             ACTOR: ${{github.actor}}
+            EVENT_NAME: ${{github.event_name}}
             
 
         steps:
@@ -33,7 +34,9 @@ jobs:
             - name: Context github
               run: |
                  
-                   echo "repository: "
+                   echo "repository: $REPOSITORY "
+                   echo "actor: $ACTOR"
+                   echo "Event name : $EVENT_NAME"
             
             - name: user name
               run: |
