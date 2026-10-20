@@ -1,0 +1,23 @@
+name: webhook
+run-name: webhook test
+
+on:
+    repository_dispatch:
+        types:
+            - deploy
+
+
+jobs:
+
+    deploy:
+        name: we code
+        runs-on: ubuntu-22.04
+        steps:
+
+            - name: checkout
+              uses: actions/checkout@v5
+            
+            - name: repository_dispatch
+              run: |
+                     echo "event type : ${{github.event.action}}"
+                     echo "client playload : ${{github.event.client_payload.env}}"

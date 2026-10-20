@@ -6,8 +6,7 @@ on:
         branches: main
     pull_request: 
         branches: main
-        paths: 
-            - 'src/**'
+
     workflow_dispatch:
         inputs:
             environnements:
@@ -18,8 +17,7 @@ on:
                     - dev
                     - prod
                     - staging
-    repository_dispatch: 
-        types: [test,deploy]
+
 
 permissions:
     contents: read
@@ -63,16 +61,3 @@ jobs:
                    echo "Options choisis: ${{inputs.environnements}}"
 
                    echo "Options choisis: ${{github.event.inputs}}"
-
-    deploy:
-        name: we code
-        runs-on: ubuntu-22.04
-        steps:
-
-            - name: checkout
-              uses: actions/checkout@v5
-            
-            - name: repository_dispatch
-              run: |
-                     echo "event type : ${{github.event.action}}"
-                     echo "client playload : ${{github.event.client_payload.env}}"
