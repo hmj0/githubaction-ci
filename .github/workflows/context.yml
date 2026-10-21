@@ -51,12 +51,12 @@ jobs:
             - name: Creation du fichier
               id : short_sha_id
               run: |
-                    mkdir -p repo/file.txt
+                    mkdir -p repo/
                     echo "hello je suis l'artifact" >> repo/file.txt
                     
                     echo "short_sha = ${COMMIT_SHA::7}" >> "$GITHUB_OUTPUT"
 
-                    echo "$GITHUB_OUTPUT"
+                    echo "chemin du github_output: $GITHUB_OUTPUT"
             
             - name: Upload de l'artifact
               uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
