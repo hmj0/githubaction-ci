@@ -1,0 +1,99 @@
+name: contexte
+run-name: contexte lance par ${{github.actor}}
+
+on: 
+    push:
+        branches:
+            - main
+        paths: 
+            - 'mydir/**'
+    pull_request: 
+        branches:
+            - main
+
+    workflow_dispatch:
+        inputs:
+            environnement:
+                description: "les environnements disponible"
+                required: true 
+                type: choice
+                options:
+                    - dev
+                    - prod
+                    - staging
+    repository_dispatch:
+        types:
+            - test
+            - deploy
+permissions:
+    contents: read 
+
+env:
+    USER_PASSWORD: ${{secrets.USER_PASSWORD}}
+    USER: ${{secrets.USER}}
+    URL_REPOSITORY_DISPATCH: ${{vars.URL_REPOSITORY_DISPATCH}}
+    COMMIT_SHA: ${{github.sha}}
+
+
+jobs:
+    test:
+        
+        name: test_contexte
+        runs-on: ubuntu-22.04
+        permissions:
+            contents: read
+        outputs:
+            short_sha: ${{steps.short_sha_id.outputs.short_sha}}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+            - name: Creation du fichier
+              id : short_sha_id
+              run: |
+                    mkdir -p repo/file.txt
+                    echo "hello je suis l'artifact" >> repo/file.txt
+                    
+                    echo "short_sha = ${COMMIT_SHA::7}" >> "$GITHUB_OUTPUT"
+
+                    echo "$GITHUB_OUTPUT"
+            
+            - name: Upload de l'artifact
+              uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+              with:
+                name: contexte_artifact
+                path: repo/file.txt
+                retention-days: 1
+
+            - name: Contexte Github
+              run: |
+                    echo "Repository : ${{github.repository}}"
+                    echo "Actor : ${{github.actor}}"
+                    echo "Event : ${{github.event_name}}"
+                    echo "Workflow dispatch option : ${{inputs.environnement}}"
+                    echo "Repository dispatch option : ${{github.event.action}}"
+                    echo "Repository dispatch types : ${{github.event.client_payload.version}}"
+
+    
+    deploy:
+        needs: test
+        name: deploy_contexte
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Recuperation des outputs
+              run: |
+                     echo "short_sha : ${{needs.test.outputs.short_sha}}"
+            - name: Download du output
+              uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+              with:
+                name: contexte_artifact
+                path: .
+
+            - name: Afficher file
+              run: |
+                    cat file.txt
+        
+
+                
+
+            
