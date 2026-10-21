@@ -52,6 +52,7 @@ jobs:
               id : short_sha_id
               run: |
                     mkdir -p repo/
+                    echo "le chemin: ${pwd}"
                     echo "hello je suis l'artifact" >> repo/file.txt
                     
                     echo "short_sha = ${COMMIT_SHA::7}" >> "$GITHUB_OUTPUT"
