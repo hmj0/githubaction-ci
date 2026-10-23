@@ -27,8 +27,8 @@ on:
             - deploy
 
     
-    schedule:
-        - cron: '1 * * * *'
+   # schedule:
+   #     - cron: '1 * * * *'
 
 permissions:
     contents: read 
@@ -75,8 +75,8 @@ jobs:
               id: cache
               uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
               with:
-                path: mydir/terraform.lock.hcl
-                key: ${{runner.os}}-terraform-${{hashFiles('**/terraform.lock.hcl')}}
+                path: terraform.lock.hcl
+                key: ${{runner.os}}-terraform-${{hashFiles('terraform.lock.hcl')}}
                 restore-keys: |
                                 ${{runner.os}}-terraform-
                                 ${{runner.os}}-
