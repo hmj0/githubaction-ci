@@ -105,17 +105,14 @@ jobs:
               run: |
                      echo "Creation Artifact"
                      mkdir -p repo/artifact/
-                     echo "chemin_artifact=repo/artifact/" >> "$GITHUB_ENV"
+                     echo "${{inputs.artifact_contenue}}" >> repo/artifact/${{inputs.artifact_file_name}}
 
-            - name: Contenue de l'artifact
-              run: |
-                     echo "${{inputs.artifact_contenue}}" >> $chemin_artifact/${{inputs.artifact_file_name}}
             
             - name: Mise en place  de l'artifact
               uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
               with:
                 name: ${{inputs.artifact_name}}
-                path: $chemin_artifact/${{inputs.artifact_file_name}}
+                path: repo/artifact/${{inputs.artifact_file_name}}
                 retention-days: ${{inputs.retention_artifact}}
 
             - name: Aficher le user
