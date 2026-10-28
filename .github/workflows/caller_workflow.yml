@@ -57,6 +57,11 @@ jobs:
         timeout-minutes: 30
         runs-on: ubuntu-22.04
         steps:
+
+            - name: Recuperation de l'outputs
+              run: |
+                     echo "Outputs: ${{needs.call_reusable_workflows.outputs.seven_sha}}"
+                     
             - name: Recuperation d'artifact
               uses: actions/download-artifact@v5
               with:
@@ -68,9 +73,7 @@ jobs:
                     echo "Afficher l'artifact"
                     cat file_artifact.txt
 
-            - name: Recuperation de l'outputs
-              run: |
-                     echo "Outputs: ${{needs.call_reusable_workflows.outputs.seven_sha}}"
+
 
 
 
