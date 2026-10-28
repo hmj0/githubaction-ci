@@ -1,0 +1,78 @@
+name: Caller Workflow
+run-name: Caller_Workflow lance par ${{github.actor}}
+
+on:
+    push:
+        branches:
+            - main
+            - dev
+    pull_request: 
+        branches:
+            - main
+    workflow_dispatch:
+        inputs:
+            environnements:
+                description: Le choix de l'environnement d'execution du workflow
+                required: true
+                default: test
+                type: choice
+                options:
+                    - test
+                    - sandbox_min
+                    - sandbox_max
+                    - sandbox_giga
+    repository_dispatch:
+        types: [build, deploy]
+    
+    schedule:
+        - cron: '5 * * * *'
+
+permissions:
+    contents: read
+
+env:
+    USER_NAME: ${{secrets.USER_NAME}}
+    USER_PASSWORD: ${{secrets.PASSWORD}}
+            
+jobs:
+    call_reusable_workflows:
+
+        uses: ./.github/workflows/reusable_workflows.yml
+        with:
+            cache_path: 'file_cache.txt'
+            contenue_cache_file: 'je suis le contenue du fichier file_cache.txt'
+            artifact_name: 'myartifact'
+            retention_artifact: 1
+            artifact_file_name: 'file_artifact.txt'
+
+        secrets:
+            USER_NAME: ${{secrets.USER_NAME}}
+            USER_PASSWORD: ${{secrets.PASSWORD}}
+
+    check_workflows:
+        needs: call_reusable_workflows
+        name: Check_workflows
+        permissions:
+            contents: read
+        timeout-minutes: 30
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Recuperation d'artifact
+              uses: actions/download-artifact@v5
+              with:
+                name: myartifact
+                path: .
+
+            - name: Afficher le contenue de l'artifact
+              run: |
+                    echo "Afficher l'artifact"
+                    cat file_artifact.txt
+
+            - name: Recuperation de l'outputs
+              run: |
+                     echo "Outputs: ${{needs.call_reusable_workflows.outputs.seven_sha}}"
+
+
+
+
+

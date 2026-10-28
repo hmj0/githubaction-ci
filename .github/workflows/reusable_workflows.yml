@@ -1,0 +1,116 @@
+name: Reusable workflow
+run-name: Reusable_Workflow lance par ${{github.actor}}
+
+on:
+    workflow_call:
+        inputs:
+            cache_path:
+                description: Fichier ou Repertoire a cacher
+                required: true
+                type: string
+            contenue_cache_file:
+                description: Le contenue du fichier a mettre en cache
+                required: true
+                type: string
+            artifact_name:
+                description: Le nom de l'arifact
+                required: true
+                type: string
+            retention_artifact:
+                description: Jour(s) de retention Artifact
+                required: true
+                type: number
+
+            artifact_file_name:
+                description: Le fichier a partage
+                required: true
+                type: string
+        outputs:
+            seven_sha:
+                description: Le sha github reduit a 7 caracteres
+                value: ${{jobs.contexte.outputs.short}}
+
+        secrets:
+            USER_NAME:
+                required: true
+            USER_PASSWORD: 
+                required: true
+
+                
+
+
+
+            
+
+jobs:
+    contexte:
+        name: Workflow_contexte
+        permissions:
+            contents: read
+        timeout-minutes: 30
+        outputs:
+            short: ${{steps.short_sha.outputs.short_sha}}
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout du repo
+              uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+            - name: Afficher le contextes github
+              run: |
+                   echo "Contexte Github"
+                   echo "Actor: ${{github.actor}}"
+                   echo "Repository: ${{github.repository}}"
+                   echo "Event: ${{github.event_name}}"
+                   echo "Branche: ${{github.ref_name}}"
+                   echo "SHA: ${{github.sha}}"
+
+            - name: Mise en place du cache
+              id: cache
+              uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+              with:
+                path: ${{inputs.cache_path}}
+                key: ${{runner.os}}-cache-${{hashFiles(inputs.cache_path)}}
+                restore-keys: |
+                                ${{runner.os}}-cache-
+                                ${{runner.os}}-
+            - name: Creation fichier de cache
+              env:
+                CACHE_FILE: ${{inputs.cache_path}}
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: |
+                    echo "Creation du fichier de cache"
+                    echo " "
+                    mkdir -p repo/cache/
+                    echo "${{inputs.contenue_cache_file}}" >> repo/cache/${CACHE_FILE}
+
+            - name: Creation d'outputs
+              id: short_sha
+              run: |
+                     echo "Creation Outputs"
+                     SHORT_SHA=${{github.sha}}
+                     echo "short_sha=${SHORT_SHA::7}" >> "$GITHUB_OUTPUT"
+
+            - name: Creation de l'artifact
+              run: |
+                     echo "Creation Artifact"
+                     mkdir -p repo/artifact/
+                     echo "chemin_artifact=repo/artifact/" >> "$GITHUB_ENV"
+            
+            - name: Mise en place  de l'artifact
+              uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+              with:
+                name: ${{inputs.artifact_name}}
+                path: $chemin_artifact/${{inputs.artifact_file_name}}
+                retention-days: ${{inputs.retention_artifact}}
+
+            - name: Aficher le user
+              env:
+                USER_NAME: ${{secrets.USER_NAME}}
+                USER_PASSWOD: ${{secrets.USER_PASSWORD}}
+              run: |
+                     echo "le nom du user est: ${USER_NAME}"
+
+    
+            
+                                
+            
