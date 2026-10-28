@@ -70,6 +70,8 @@ jobs:
                    echo "SHA: ${{github.sha}}"
 
             - name: Creation fichier de cache
+              env:
+                CACHE_FILE: ${{inputs.cache_path}}
               run: |
                     echo "Creation du fichier de cache"
                     echo " "
