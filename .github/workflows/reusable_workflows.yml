@@ -25,6 +25,11 @@ on:
                 description: Le fichier a partage
                 required: true
                 type: string
+            artifact_contenue:
+                description: Le contenue de l'artifact
+                required: true
+                type: string
+
         outputs:
             seven_sha:
                 description: Le sha github reduit a 7 caracteres
@@ -64,6 +69,13 @@ jobs:
                    echo "Branche: ${{github.ref_name}}"
                    echo "SHA: ${{github.sha}}"
 
+            - name: Creation fichier de cache
+              run: |
+                    echo "Creation du fichier de cache"
+                    echo " "
+                    mkdir -p repo/cache/
+                    echo "${{inputs.contenue_cache_file}}" >> repo/cache/${CACHE_FILE}
+
             - name: Mise en place du cache
               id: cache
               uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
@@ -73,15 +85,12 @@ jobs:
                 restore-keys: |
                                 ${{runner.os}}-cache-
                                 ${{runner.os}}-
-            - name: Creation fichier de cache
-              env:
-                CACHE_FILE: ${{inputs.cache_path}}
+
+            - name: Cache status
               if: steps.cache.outputs.cache-hit != 'true'
               run: |
-                    echo "Creation du fichier de cache"
-                    echo " "
-                    mkdir -p repo/cache/
-                    echo "${{inputs.contenue_cache_file}}" >> repo/cache/${CACHE_FILE}
+                    echo "Cache Miss"
+
 
             - name: Creation d'outputs
               id: short_sha
@@ -90,11 +99,15 @@ jobs:
                      SHORT_SHA=${{github.sha}}
                      echo "short_sha=${SHORT_SHA::7}" >> "$GITHUB_OUTPUT"
 
-            - name: Creation de l'artifact
+            - name: Creation du dossier de l'artifact
               run: |
                      echo "Creation Artifact"
                      mkdir -p repo/artifact/
                      echo "chemin_artifact=repo/artifact/" >> "$GITHUB_ENV"
+
+            - name: Contenue de l'artifact
+              run: |
+                     echo "${{inputs.artifact_contenue}}" >> $chemin_artifact/${{inputs.artifact_file_name}}
             
             - name: Mise en place  de l'artifact
               uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5

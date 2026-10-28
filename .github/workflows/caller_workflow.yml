@@ -44,6 +44,7 @@ jobs:
             artifact_name: 'myartifact'
             retention_artifact: 1
             artifact_file_name: 'file_artifact.txt'
+            artifact_contenue: "Je suis le contenue de l'arttiact myartifact" 
 
         secrets:
             USER_NAME: ${{secrets.USER_NAME}}
@@ -61,7 +62,7 @@ jobs:
             - name: Recuperation de l'outputs
               run: |
                      echo "Outputs: ${{needs.call_reusable_workflows.outputs.seven_sha}}"
-                     
+
             - name: Recuperation d'artifact
               uses: actions/download-artifact@v5
               with:
