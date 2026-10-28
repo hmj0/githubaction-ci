@@ -44,7 +44,7 @@ jobs:
             artifact_name: 'myartifact'
             retention_artifact: 1
             artifact_file_name: 'file_artifact.txt'
-            artifact_contenue: "Je suis le contenue de l'arttiact myartifact" 
+            artifact_contenue: "Je suis le contenue de l'artiact myartifact" 
 
         secrets:
             USER_NAME: ${{secrets.USER_NAME}}
